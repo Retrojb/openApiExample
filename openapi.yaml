@@ -1,0 +1,174 @@
+openapi: 3.0.0
+info:
+  description: API Standards example ymal for Biblotheca using basic CRUD operations. Example is based on the OAS standards using high level parameters. Using Schemas to define API objects. 
+  version: 1.0.0
+  title: Bibliotheca API Standard Example OAS
+tags:
+- name: books
+  description: Operations on books
+
+paths:
+  /books:
+    get:
+      tags:
+      - books
+      summary: Return a list of books
+      operationId: readBooks
+      responses:
+        "200": 
+          description: Returned all books
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BooksResponse"
+        "404":
+          description: Failed to return Books
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      tags:
+      - books
+      summary: Create a book
+      operationId: createBook
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BooksRequest"
+        description: Create a new book
+        required: true
+      responses:
+        "204":
+          description: Successfully created book
+        "400":
+          description: Failed to create book
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /books/{bookId}:
+    parameters:
+      - name: bookId
+        in: path
+        description: Book id for returned book
+        required: true
+        schema:
+          type: integer
+    get:
+      tags:
+      - books
+      summary: Return a book by bookId
+      operationId: getBook
+      responses:
+        "200":
+          description: Book information returned succesfully
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BooksResponse"
+        "404":
+          description: Error book id does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+      - books
+      summary: Update a book by Id
+      description: Update a book by its id
+      operationId: updateBook
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookUpdate"
+      responses:
+        "200":
+          description: Successfully updated book
+        "400":
+          description: Failed to update book
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      tags:
+      - books
+      summary: Remove book by id
+      description: Remove book from inventory by bookId
+      operationId: deleteBook
+      responses:
+        "204":
+          description: Successfully deleted book by ID
+        "400":
+          description: Failed to remove book
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    BooksResponse:
+      type: object
+      properties:
+        success: 
+          type: boolean
+          example: true
+        data:
+          $ref: "#/components/schemas/Books"
+    Books:
+      type: object
+      properties:
+        bookId:
+          type: integer
+          example: 123-456-789-1011
+        title:
+          type: string
+          example: Book of all Books
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        lastUpdatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+    BooksRequest:
+      type: object
+      properties:
+        bookId:
+          type: integer
+          format: int64
+          description: Books GUID
+          example: 1110-987-654-321
+        title:
+          type: string
+          description: Book title
+    BookUpdate:
+      type: object
+      properties:
+        bookId: 
+          type: integer
+          example: 4444-5555-6666-7777
+        title:
+          type: string
+          example: The art of art
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        code:
+          type: number
+          example: 400
+        message:
+          type: string
+          example: Error Response default
+        error:
+          type: object
+          example: ERROR ERROR 
+        
